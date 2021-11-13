@@ -94,7 +94,7 @@
                 或者您未選擇市場
                 <br>
                 <p>請選擇市場<ion-icon  class="reset_icon" name="reload-outline"></ion-icon></p>
-                目前交易日期為{{products[0]['交易日期']}}
+                
             </div>
             <ul class="main_list">
                 <li>
@@ -144,6 +144,7 @@
                         // this.products = res.data;//res就是代入的參數
                         console.log(res)
                         this.products = res.data;
+                        alert(`列表的交易日期為:${this.products[0]['交易日期']}`)
                         if (this.products != 0) {
                             this.loading.isOK = true;
                             this.loading.bg_isOK = false;
