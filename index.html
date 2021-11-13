@@ -87,9 +87,14 @@
                 </div>
             </div>
             <div class="bg" v-bind:class="{hide:loading.bg_isOK}">
-                若沒有選單出現，可能為今日此市場無訂單或者您未選擇市場
+                若沒有選單出現
+                <br>
+                可能為今日此市場無訂單
+                <br>
+                或者您未選擇市場
                 <br>
                 <p>請選擇市場<ion-icon  class="reset_icon" name="reload-outline"></ion-icon></p>
+                目前交易日期為{{products[0]['交易日期']}}
             </div>
             <ul class="main_list">
                 <li>
@@ -104,7 +109,7 @@
                     載入中...
                 </div>
                 <li v-for="i in temp_produc">
-                    <p>{{i['市場名稱']}}</p>
+                    <p>{{i['作物名稱']}}</p>
                     <p>{{i['上價']}}</p>
                     <p>{{i['中價']}}</p>
                     <p>{{i['下價']}}</p>
