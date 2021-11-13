@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>當日農產品交易行情</title>
+    <link rel="shortcut icon" href="./img/logo.png">
+    <meta name='description' content='當日農產品交易行情' />
+    <meta property="og:title" content="當日農產品交易行情">
+    <meta property="og:description" content="當日農產品交易行情">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://chiyum.github.io/productsPrice/">
+    <meta property="og:image" content="./img/logo.png">
+    <link href="./img/logo.png" rel="apple-touch-icon" />
+    <link rel="stylesheet" href="./css/index.css">
+    <meta name="keywords" content="當日農產品交易行情, 農產品交易行情, 農產品交易, 農產品,交易行情, holdkibor, Holdkibor">
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+
+<body>
+    <div class="wrap" id="wrapId">
+        <div class="nav active">
+            <span style="--i:0"></span>
+            <span style="--i:1"></span>
+            <span style="--i:2"></span>
+            <span style="--i:3">
+                <ion-icon class="close_icon" name="close-circle-outline" v-on:click="close"></ion-icon>
+            </span>
+            <ul class="nav_ul">
+                <li>
+                    本網站由賴天賜、李秀英提供
+                </li>
+                <li>相關網站:</li>
+                <li><a href="https://chiyum.github.io/pesticide/">農藥稀釋倍數比例</a></li>
+                <div class="copyright">
+                    本站僅供查詢用，無任何商業性質
+                    <br>
+                    Copyright © 2021 Holdkibor.All rights reserved.
+                </div>
+            </ul>
+        </div>
+        <div class="head">
+            <img src="./img/logo.png" alt="logo">
+            <p>當日農產品交易行情</p>
+            <div class="icon" v-on:click="open">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        <div class="main">
+            <div class="main_head">
+                <div>
+                    <h1>選擇市場</h1>
+                    <select v-model="temp" v-on:input="change">
+                        <!-- 使用v-model抓取value -->
+                        <option value="全部市場">全部市場</option>
+                        <option value="台北一">台北一</option>
+                        <option value="台北二">台北二</option>
+                        <option value="板橋區">板橋區</option>
+                        <option value="三重市">三重市</option>
+                        <option value="宜蘭市">宜蘭市</option>
+                        <option value="桃農">桃農</option>
+                        <option value="台中市">台中市</option>
+                        <option value="豐原區">豐原區</option>
+                        <option value="永靖鄉">永靖鄉</option>
+                        <option value="溪湖鎮">溪湖鎮</option>
+                        <option value="南投市">南投市</option>
+                        <option value="西螺鎮">西螺鎮</option>
+                        <option value="高雄市">高雄市</option>
+                        <option value="鳳山區">鳳山區</option>
+                        <option value="屏東市">屏東市</option>
+                        <option value="台東市">台東市</option>
+                        <option value="花蓮市">花蓮市</option>
+                    </select>
+                </div>
+                <div>
+                    <h1>搜尋</h1>
+                    <div>
+                        <input type="text" placeholder="搜尋未開放">
+                        <span class="search_btn">
+                            <ion-icon name="search-outline"></ion-icon>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg" v-bind:class="{hide:loading.bg_isOK}">
+                若沒有選單出現，可能為今日此市場無訂單或者您未選擇市場
+                <br>
+                <p>請選擇市場<ion-icon  class="reset_icon" name="reload-outline"></ion-icon></p>
+            </div>
+            <ul class="main_list">
+                <li>
+                    <p>產品名稱</p>
+                    <p>上價</p>
+                    <p>中價</p>
+                    <p>下價</p>
+                    <p>平均價</p>
+                    <p>交易量</p>
+                </li>
+                <div class="loading" v-bind:class="{hide:loading.isOK}">
+                    載入中...
+                </div>
+                <li v-for="i in temp_produc">
+                    <p>{{i['市場名稱']}}</p>
+                    <p>{{i['上價']}}</p>
+                    <p>{{i['中價']}}</p>
+                    <p>{{i['下價']}}</p>
+                    <p>{{i['平均價']}}</p>
+                    <p>{{i['交易量']}}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script>
+        Vue.createApp({
+
+            data() {
+                return {
+                    products: [],
+                    temp: '',
+                    temp_produc: [],
+                    loading: {
+                        isOK: false,
+                        bg_isOK: true
+                    },
+                }
+            },
+            created() {
+                // this.temp = '全部市場'
+                axios.get('https://data.coa.gov.tw/Service/OpenData/FromM/FarmTransData.aspx')//url代表的是要連接的網址 這個步驟就代表傳輸的動作了
+                    .then((res) => {
+                        // this.products = res.data;//res就是代入的參數
+                        console.log(res)
+                        this.products = res.data;
+                        if (this.products != 0) {
+                            this.loading.isOK = true;
+                            this.loading.bg_isOK = false;
+                        }
+                    });
+            },
+            methods: {
+                change() {
+                    setTimeout(() => {
+                        console.log('觸發成功')
+                        console.log(this.temp)
+                        if (this.products.length == 0) {
+                            alert('資料載入中，請稍後再試');
+                            this.temp = ''
+                            return
+                        }
+                        if (this.temp == '' || this.temp == '全部市場') {
+
+                            this.temp_produc = this.products;
+
+                        } else {
+                            this.temp_produc = [];//刷新列表
+                            this.products.forEach((data, i) => {
+                                //這邊有個若使用者在載入中時點選select的話，temp取到的值會是上一次點選的那個value or 空白而非第二次的bug
+                                //因此使用settimeout解決
+                                if (this.temp == data['市場名稱']) {
+
+                                    this.temp_produc.push(data);//將資料上傳列表
+                                    console.log(this.temp_produc)
+                                    if(!this.temp_produc){
+                                        console.log('測試')
+                                    }
+
+                                }
+                            });
+                        };
+
+                    }, 0);
+                },
+                open() {//打開選單
+                    document.querySelector('.nav').classList.remove('active');
+                    console.log('hi')
+                },
+                close() {//打開選單
+                    document.querySelector('.nav').classList.add('active');
+                }
+            }
+        }).mount('#wrapId')
+    </script>
+</body>
+
+</html>
